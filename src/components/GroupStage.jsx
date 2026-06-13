@@ -2,14 +2,15 @@ import { generateGroupFixtures, calculateStandings, getMatchStatus, simulateScor
 import MatchCard from './MatchCard.jsx';
 import GroupTable from './GroupTable.jsx';
 
-export default function GroupStage({ tournament, sport, competitors, predictions, onPick, userScores, onScoreInput }) {
+export default function GroupStage({ tournament, sport, competitors, predictions, onPick, userScores, onScoreInput, realPicks = {}, realScores = {} }) {
   const matchData = tournament.matchData ?? {};
 
   return (
     <div className="groups-grid">
       {tournament.groups.map((group, groupIndex) => {
         const fixtures  = generateGroupFixtures(group, tournament.startDate, groupIndex);
-        const standings = calculateStandings(group.competitorIds, fixtures, predictions, sport.allowsDraw);
+        const merged    = { ...predictions, ...realPicks };
+        const standings = calculateStandings(group.competitorIds, fixtures, merged, sport.allowsDraw, realScores);
 
         return (
           <div key={group.id} className="group-block">

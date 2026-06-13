@@ -105,6 +105,8 @@ export default function TournamentView({ tournament, sport, competitors, predict
           onPick={onPick}
           userScores={userScores}
           onScoreInput={onScoreInput}
+          realPicks={realPicks}
+          realScores={realScores}
         />
       )}
       {activeTab === 'Knockout' && (
