@@ -22,19 +22,42 @@ export default function TournamentView({ tournament, sport, competitors, predict
 
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
+  // Build picks from real scores in matchData so standings reflect actual results
+  const realPicks = useMemo(() => {
+    if (fmt !== 'groups' || !tournament.matchData) return {};
+    const picks = {};
+    tournament.groups.forEach((group, gi) => {
+      generateGroupFixtures(group, tournament.startDate, gi).forEach(match => {
+        const fwdKey = `${match.homeId}:${match.awayId}`;
+        const bwdKey = `${match.awayId}:${match.homeId}`;
+        const actual = tournament.matchData[fwdKey] ?? tournament.matchData[bwdKey];
+        const flipped = !tournament.matchData[fwdKey] && !!tournament.matchData[bwdKey];
+        if (!actual || !('home' in actual)) return;
+        const homeGoals = flipped ? actual.away : actual.home;
+        const awayGoals = flipped ? actual.home : actual.away;
+        if (homeGoals > awayGoals) picks[match.id] = match.homeId;
+        else if (awayGoals > homeGoals) picks[match.id] = match.awayId;
+        else picks[match.id] = 'draw';
+      });
+    });
+    return picks;
+  }, [tournament, fmt]);
+
   const groupStandings = useMemo(() => {
     if (fmt !== 'groups') return null;
+    // Real scores override user predictions in standings
+    const merged = { ...predictions, ...realPicks };
     const result = {};
     tournament.groups.forEach(group => {
       result[group.id] = calculateStandings(
         group.competitorIds,
         generateGroupFixtures(group),
-        predictions,
+        merged,
         sport.allowsDraw
       );
     });
     return result;
-  }, [tournament, predictions, sport, fmt]);
+  }, [tournament, predictions, realPicks, sport, fmt]);
 
   const resolvedKnockoutRounds = useMemo(() => {
     if (fmt !== 'groups') return null;
