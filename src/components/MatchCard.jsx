@@ -58,6 +58,8 @@ export default function MatchCard({
     onPick(match.id, pickedDraw ? null : 'draw');
   }
 
+  const suggested = !isPlayed ? suggestScore(homePercent, drawPercent, awayPercent) : null;
+
   const cardClass = [
     'match-card',
     isPlayed ? 'match-played' : '',
@@ -136,50 +138,43 @@ export default function MatchCard({
         </div>
       )}
 
-      {!isPlayed && (() => {
-        const suggested = suggestScore(homePercent, drawPercent, awayPercent);
-        return (
-          <>
-            {suggested && (
-              <div className="suggested-score-row">
-                <span className="suggested-score-label">AI pick:</span>
-                <span className="suggested-score-value">
-                  {homeCompetitor?.abbr ?? homeLabel ?? 'H'} {suggested.home} – {suggested.away} {awayCompetitor?.abbr ?? awayLabel ?? 'A'}
-                </span>
-              </div>
-            )}
+      {!isPlayed && suggested && (
+        <div className="suggested-score-row">
+          <span className="suggested-score-label">AI pick:</span>
+          <span className="suggested-score-value">
+            {homeCompetitor?.abbr ?? homeLabel ?? 'H'} {suggested.home} – {suggested.away} {awayCompetitor?.abbr ?? awayLabel ?? 'A'}
+          </span>
+        </div>
+      )}
 
-            {onScoreInput && homeCompetitor && awayCompetitor && (
-              <div className="score-input-row">
-                <span className="score-input-label">Your score:</span>
-                <input
-                  type="number" min="0" max="99"
-                  className="score-input"
-                  value={userScore?.home ?? ''}
-                  placeholder="0"
-                  onChange={e => {
-                    const h = e.target.value === '' ? '' : parseInt(e.target.value, 10);
-                    const a = userScore?.away ?? '';
-                    onScoreInput(match.id, h, a, homeCompetitor.id, awayCompetitor.id, allowDraw);
-                  }}
-                />
-                <span className="score-input-dash">–</span>
-                <input
-                  type="number" min="0" max="99"
-                  className="score-input"
-                  value={userScore?.away ?? ''}
-                  placeholder="0"
-                  onChange={e => {
-                    const a = e.target.value === '' ? '' : parseInt(e.target.value, 10);
-                    const h = userScore?.home ?? '';
-                    onScoreInput(match.id, h, a, homeCompetitor.id, awayCompetitor.id, allowDraw);
-                  }}
-                />
-              </div>
-            )}
-          </>
-        );
-      })()}
+      {!isPlayed && onScoreInput && homeCompetitor && awayCompetitor && (
+        <div className="score-input-row">
+          <span className="score-input-label">Your score:</span>
+          <input
+            type="number" min="0" max="99"
+            className="score-input"
+            value={userScore?.home ?? ''}
+            placeholder="0"
+            onChange={e => {
+              const h = e.target.value === '' ? '' : parseInt(e.target.value, 10);
+              const a = userScore?.away ?? '';
+              onScoreInput(match.id, h, a, homeCompetitor.id, awayCompetitor.id, allowDraw);
+            }}
+          />
+          <span className="score-input-dash">–</span>
+          <input
+            type="number" min="0" max="99"
+            className="score-input"
+            value={userScore?.away ?? ''}
+            placeholder="0"
+            onChange={e => {
+              const a = e.target.value === '' ? '' : parseInt(e.target.value, 10);
+              const h = userScore?.home ?? '';
+              onScoreInput(match.id, h, a, homeCompetitor.id, awayCompetitor.id, allowDraw);
+            }}
+          />
+        </div>
+      )}
 
       {!isPlayed && (
         <PredictionBar
