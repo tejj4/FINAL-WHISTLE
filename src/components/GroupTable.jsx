@@ -10,6 +10,8 @@ export default function GroupTable({ standings, competitors, advanceCount = 2 })
           <th>W</th>
           <th>D</th>
           <th>L</th>
+          <th>GF</th>
+          <th>GA</th>
           <th>GD</th>
           <th>Pts</th>
         </tr>
@@ -38,6 +40,8 @@ export default function GroupTable({ standings, competitors, advanceCount = 2 })
               <td>{row.w}</td>
               <td>{row.d}</td>
               <td>{row.l}</td>
+              <td>{row.gf}</td>
+              <td>{row.ga}</td>
               <td>{row.gf - row.ga > 0 ? `+${row.gf - row.ga}` : row.gf - row.ga}</td>
               <td className="pts-col">{row.pts}</td>
             </tr>
