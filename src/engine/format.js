@@ -355,6 +355,14 @@ export function formatMatchDate(dateStr) {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 }
 
+export function formatMatchTime(timeStr) {
+  if (!timeStr) return '';
+  const [h, m] = timeStr.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const hour12 = h % 12 || 12;
+  return `${hour12}:${m.toString().padStart(2, '0')} ${ampm} SGT`;
+}
+
 // Deterministic simulated FT score for played matches.
 // Same matchId always produces the same score.
 export function simulateScore(matchId, homeStrength, awayStrength) {

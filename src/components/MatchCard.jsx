@@ -1,5 +1,5 @@
 import PredictionBar from './PredictionBar.jsx';
-import { getMatchStatus, simulateScore, formatMatchDate } from '../engine/format.js';
+import { getMatchStatus, simulateScore, formatMatchDate, formatMatchTime } from '../engine/format.js';
 
 export default function MatchCard({
   match,
@@ -66,6 +66,9 @@ export default function MatchCard({
           {isLive   && <span className="mbadge mbadge-live">LIVE</span>}
           {isPlayed && <span className="mbadge mbadge-ft">FT</span>}
           <span className="match-date-text">{formatMatchDate(match.date)}</span>
+          {match.time && !isPlayed && (
+            <span className="match-time-text">{formatMatchTime(match.time)}</span>
+          )}
         </div>
       )}
 

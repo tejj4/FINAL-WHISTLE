@@ -36,7 +36,9 @@ export default function GroupStage({ tournament, sport, competitors, predictions
                   const flipped = !actualFwd && !!actualBwd;
 
                   const date   = actual?.date ?? match.date;
-                  const status = getMatchStatus(date);
+                  const hasRealScore = actual && 'home' in actual;
+                  // Force 'played' when we have a confirmed score, even if date is today
+                  const status = hasRealScore ? 'played' : getMatchStatus(date);
 
                   // Real score > simulated for played matches
                   let score = null;
@@ -64,7 +66,7 @@ export default function GroupStage({ tournament, sport, competitors, predictions
                   return (
                     <MatchCard
                       key={match.id}
-                      match={{ ...match, date }}
+                      match={{ ...match, date, time: actual?.time }}
                       homeCompetitor={home}
                       awayCompetitor={away}
                       prediction={predictions[match.id]}

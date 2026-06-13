@@ -673,3 +673,9 @@ button { cursor: pointer; font: inherit; border: none; background: none; }
   letter-spacing: .04em;
   padding: 2px 12px 0;
 }
+.match-time-text {
+  margin-left: 4px;
+  font-size: .62rem;
+  color: var(--accent-h);
+  font-weight: 600;
+}
