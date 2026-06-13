@@ -70,12 +70,27 @@ export default function TournamentView({ tournament, sport, competitors, predict
   const pickedCount  = Object.keys(predictions).length;
   const progress     = totalMatches > 0 ? (pickedCount / totalMatches) * 100 : 0;
 
+  const userPts = useMemo(() => {
+    let pts = 0;
+    Object.entries(realPicks).forEach(([matchId, result]) => {
+      if (predictions[matchId] === result) pts += result === 'draw' ? 1 : 3;
+    });
+    return pts;
+  }, [predictions, realPicks]);
+
+  const playedCount = Object.keys(realPicks).length;
+
   return (
     <div>
       <div className="flex-row" style={{ marginBottom: 8 }}>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: '.78rem', color: 'var(--text3)', marginBottom: 4 }}>
-            {pickedCount} / {totalMatches} matches predicted
+          <div style={{ fontSize: '.78rem', color: 'var(--text3)', marginBottom: 4, display: 'flex', gap: 12 }}>
+            <span>{pickedCount} / {totalMatches} matches predicted</span>
+            {playedCount > 0 && (
+              <span style={{ color: 'var(--yellow)', fontWeight: 600 }}>
+                Your score: {userPts} pts
+              </span>
+            )}
           </div>
           <div className="progress-bar-wrap">
             <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
