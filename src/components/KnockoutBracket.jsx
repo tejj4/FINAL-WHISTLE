@@ -1,5 +1,5 @@
 import MatchCard from './MatchCard.jsx';
-import { resolveBracketSlot, resolveSource, sourceLabel } from '../engine/format.js';
+import { resolveBracketSlot, resolveSource, sourceLabel, calculatePopularPick } from '../engine/format.js';
 
 // Renders either a pure bracket tournament or the knockout stage of a groups tournament.
 // For pure bracket: pass `tournament` with .rounds, `predictions`.
@@ -55,22 +55,33 @@ function RoundColumn({ round, roundIndex, totalRounds, competitors, predictions,
       <div className="bracket-round">
         <div className="bracket-round-header">{round.name}</div>
         <div className="bracket-round-matches" style={{ gap: `${matchCount > 2 ? 8 : 16}px` }}>
-          {round.matches.map(match => (
-            <div key={match.id} className="bracket-match-wrapper">
-              <MatchCard
-                match={match}
-                homeCompetitor={match.homeId ? competitors[match.homeId] : null}
-                awayCompetitor={match.awayId ? competitors[match.awayId] : null}
-                homeLabel={match.homeLabel}
-                awayLabel={match.awayLabel}
-                prediction={predictions[match.id]}
-                onPick={onPick}
-                allowDraw={sport?.allowsDraw ?? false}
-                userScore={userScores?.[match.id]}
-                onScoreInput={onScoreInput}
-              />
-            </div>
-          ))}
+          {round.matches.map(match => {
+            const home      = match.homeId ? competitors[match.homeId] : null;
+            const away      = match.awayId ? competitors[match.awayId] : null;
+            const allowDraw = sport?.allowsDraw ?? false;
+            const pickPcts  = home && away
+              ? calculatePopularPick(home.strength, away.strength, allowDraw)
+              : null;
+            return (
+              <div key={match.id} className="bracket-match-wrapper">
+                <MatchCard
+                  match={match}
+                  homeCompetitor={home}
+                  awayCompetitor={away}
+                  homeLabel={match.homeLabel}
+                  awayLabel={match.awayLabel}
+                  prediction={predictions[match.id]}
+                  onPick={onPick}
+                  allowDraw={allowDraw}
+                  userScore={userScores?.[match.id]}
+                  onScoreInput={onScoreInput}
+                  homePercent={pickPcts?.homePercent}
+                  drawPercent={pickPcts?.drawPercent}
+                  awayPercent={pickPcts?.awayPercent}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 

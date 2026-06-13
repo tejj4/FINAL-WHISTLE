@@ -1,6 +1,7 @@
 // Standings table for one group or a full league.
 export default function GroupTable({ standings, competitors, advanceCount = 2 }) {
   return (
+    <div style={{ overflowX: 'auto' }}>
     <table className="standings-table">
       <thead>
         <tr>
@@ -49,5 +50,6 @@ export default function GroupTable({ standings, competitors, advanceCount = 2 })
         })}
       </tbody>
     </table>
+    </div>
   );
 }
