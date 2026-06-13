@@ -583,3 +583,93 @@ button { cursor: pointer; font: inherit; border: none; background: none; }
 .matchday-btn:hover:not(:disabled) { background: var(--bg4); color: var(--text); }
 .matchday-btn:disabled { opacity: .4; cursor: default; }
 
+/* ── Match date row ────────────────────────────────────────────────────── */
+.match-date-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 2px;
+  font-size: .7rem;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border2);
+}
+.match-date-text { margin-left: auto; }
+
+/* Inline match-level badges (FT / LIVE) */
+.mbadge {
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.mbadge-live { background: var(--green-bg);  color: var(--green); }
+.mbadge-ft   { background: var(--bg4);       color: var(--text3); }
+
+/* ── Played match score row ────────────────────────────────────────────── */
+.match-played { opacity: .92; }
+.match-live   { box-shadow: 0 0 0 1px var(--green); }
+
+.match-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 14px 16px;
+}
+.score-team {
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--text2);
+  min-width: 36px;
+  text-align: center;
+}
+.score-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: .04em;
+}
+
+
+/* ── AI Expert Insight ──────────────────────────────────────────────────── */
+.match-insight {
+  padding: 8px 12px 6px;
+  background: var(--yellow-bg);
+  border-top: 1px solid var(--border2);
+  border-bottom: 1px solid var(--border2);
+}
+.insight-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.insight-ai-tag {
+  font-size: .62rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--yellow);
+  color: #000;
+  white-space: nowrap;
+}
+.insight-pick {
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--yellow);
+}
+.insight-text {
+  font-size: .68rem;
+  color: var(--text2);
+  line-height: 1.45;
+}
+.pbar-ai-tag {
+  display: block;
+  font-size: .58rem;
+  font-weight: 600;
+  color: var(--yellow);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: 2px 12px 0;
+}
