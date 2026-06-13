@@ -2,7 +2,7 @@ import { generateGroupFixtures, calculateStandings, getMatchStatus, simulateScor
 import MatchCard from './MatchCard.jsx';
 import GroupTable from './GroupTable.jsx';
 
-export default function GroupStage({ tournament, sport, competitors, predictions, onPick }) {
+export default function GroupStage({ tournament, sport, competitors, predictions, onPick, userScores, onScoreInput }) {
   const matchData = tournament.matchData ?? {};
 
   return (
@@ -79,6 +79,8 @@ export default function GroupStage({ tournament, sport, competitors, predictions
                       homePercent={homePercent}
                       drawPercent={drawPercent}
                       awayPercent={awayPercent}
+                      userScore={userScores?.[match.id]}
+                      onScoreInput={onScoreInput}
                     />
                   );
                 })}

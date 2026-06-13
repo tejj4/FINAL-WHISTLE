@@ -679,3 +679,64 @@ button { cursor: pointer; font: inherit; border: none; background: none; }
   color: var(--accent-h);
   font-weight: 600;
 }
+
+/* ── Suggested score (AI pick) ─────────────────────────────────────────────── */
+.suggested-score-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 2px;
+}
+.suggested-score-label {
+  font-size: .65rem;
+  color: var(--text3);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  flex-shrink: 0;
+}
+.suggested-score-value {
+  font-size: .75rem;
+  font-weight: 700;
+  color: hsl(45 90% 60%);
+  letter-spacing: .04em;
+}
+
+/* ── User score input ────────────────────────────────────────────────────────── */
+.score-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 6px;
+}
+.score-input-label {
+  font-size: .65rem;
+  color: var(--text3);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  flex-shrink: 0;
+}
+.score-input {
+  width: 38px;
+  padding: 3px 4px;
+  text-align: center;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text1);
+  font-size: .8rem;
+  font-weight: 700;
+  -moz-appearance: textfield;
+}
+.score-input::-webkit-outer-spin-button,
+.score-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.score-input:focus {
+  outline: none;
+  border-color: hsl(var(--accent-h) 70% 55%);
+}
+.score-input-dash {
+  font-size: .85rem;
+  color: var(--text3);
+  font-weight: 700;
+}

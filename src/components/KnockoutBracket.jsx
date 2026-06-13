@@ -4,7 +4,7 @@ import { resolveBracketSlot, resolveSource, sourceLabel } from '../engine/format
 // Renders either a pure bracket tournament or the knockout stage of a groups tournament.
 // For pure bracket: pass `tournament` with .rounds, `predictions`.
 // For groups knockout: pass `resolvedRounds` (already resolved), `predictions`.
-export default function KnockoutBracket({ tournament, resolvedRounds, competitors, predictions, onPick, sport }) {
+export default function KnockoutBracket({ tournament, resolvedRounds, competitors, predictions, onPick, sport, userScores, onScoreInput }) {
   const rounds = resolvedRounds ?? buildBracketRounds(tournament, predictions);
 
   return (
@@ -20,6 +20,8 @@ export default function KnockoutBracket({ tournament, resolvedRounds, competitor
             predictions={predictions}
             onPick={onPick}
             sport={sport}
+            userScores={userScores}
+            onScoreInput={onScoreInput}
           />
         ))}
 
@@ -45,7 +47,7 @@ function buildBracketRounds(tournament, predictions) {
   }));
 }
 
-function RoundColumn({ round, roundIndex, totalRounds, competitors, predictions, onPick, sport }) {
+function RoundColumn({ round, roundIndex, totalRounds, competitors, predictions, onPick, sport, userScores, onScoreInput }) {
   const matchCount = round.matches.length;
 
   return (
@@ -63,7 +65,9 @@ function RoundColumn({ round, roundIndex, totalRounds, competitors, predictions,
                 awayLabel={match.awayLabel}
                 prediction={predictions[match.id]}
                 onPick={onPick}
-                allowDraw={false}
+                allowDraw={sport?.allowsDraw ?? false}
+                userScore={userScores?.[match.id]}
+                onScoreInput={onScoreInput}
               />
             </div>
           ))}

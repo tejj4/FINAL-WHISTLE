@@ -10,7 +10,7 @@ import KnockoutBracket from './KnockoutBracket.jsx';
 import LeagueView from './LeagueView.jsx';
 import ChampionSummary from './ChampionSummary.jsx';
 
-export default function TournamentView({ tournament, sport, competitors, predictions, onPick, onReset }) {
+export default function TournamentView({ tournament, sport, competitors, predictions, onPick, onReset, userScores, onScoreInput }) {
   const fmt = tournament.formatType;
 
   const tabs = useMemo(() => {
@@ -78,6 +78,8 @@ export default function TournamentView({ tournament, sport, competitors, predict
           competitors={competitors}
           predictions={predictions}
           onPick={onPick}
+          userScores={userScores}
+          onScoreInput={onScoreInput}
         />
       )}
       {activeTab === 'Knockout' && (
@@ -87,6 +89,8 @@ export default function TournamentView({ tournament, sport, competitors, predict
           predictions={predictions}
           onPick={onPick}
           sport={sport}
+          userScores={userScores}
+          onScoreInput={onScoreInput}
         />
       )}
       {activeTab === 'Bracket' && (
@@ -96,6 +100,8 @@ export default function TournamentView({ tournament, sport, competitors, predict
           predictions={predictions}
           onPick={onPick}
           sport={sport}
+          userScores={userScores}
+          onScoreInput={onScoreInput}
         />
       )}
       {activeTab === 'Standings & Fixtures' && (

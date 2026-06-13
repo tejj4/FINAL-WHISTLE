@@ -21,6 +21,7 @@ export default function App() {
   const [selectedDisplaySport,  setSelectedDisplaySport]  = useState(null);
   const [selectedTournamentId,  setSelectedTournamentId]  = useState(null);
   const [predictions,           setPredictions]           = useState({});
+  const [userScores,            setUserScores]            = useState({});
 
   const displaySport = SPORT_DISPLAY.find(s => s.id === selectedDisplaySport) ?? null;
 
@@ -59,9 +60,19 @@ export default function App() {
   function selectTournament(id) {
     setSelectedTournamentId(id);
     setPredictions({});
+    setUserScores({});
   }
 
-  function handleReset() { setPredictions({}); }
+  function handleReset() { setPredictions({}); setUserScores({}); }
+
+  function handleScoreInput(matchId, home, away, homeId, awayId, allowDraw) {
+    setUserScores(prev => ({ ...prev, [matchId]: { home, away } }));
+    // Auto-update pick based on score: home goals > away → pick home, etc.
+    if (home !== '' && away !== '' && !isNaN(home) && !isNaN(away)) {
+      const pick = home > away ? homeId : away > home ? awayId : (allowDraw ? 'draw' : homeId);
+      setPredictions(prev => ({ ...prev, [matchId]: pick }));
+    }
+  }
 
   const crumbs = [];
   if (displaySport) crumbs.push({ label: displaySport.name, onClick: () => selectDisplaySport(displaySport.id) });
@@ -176,6 +187,8 @@ export default function App() {
               predictions={predictions}
               onPick={handlePick}
               onReset={handleReset}
+              userScores={userScores}
+              onScoreInput={handleScoreInput}
             />
           </>
         )}
