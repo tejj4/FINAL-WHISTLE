@@ -2,21 +2,38 @@
 
 // ── Group fixture generation ──────────────────────────────────────────────
 
-export function generateGroupFixtures(group) {
+// startDate + groupIndex (0-11) are optional — pass them to get date fields on each fixture.
+export function generateGroupFixtures(group, startDate = null, groupIndex = 0) {
   const { id, competitorIds } = group;
+  const [p0, p1, p2, p3] = competitorIds;
+
+  // Standard FIFA round-robin rotation for 4 teams (seed1vs2, seed3vs4 in R1)
+  const rounds = [
+    [[p0, p1], [p2, p3]],
+    [[p0, p2], [p1, p3]],
+    [[p0, p3], [p1, p2]],
+  ];
+
   const matches = [];
-  for (let i = 0; i < competitorIds.length; i++) {
-    for (let j = i + 1; j < competitorIds.length; j++) {
-      matches.push({
-        id: `grp_${id}_${i}_${j}`,
-        stage: 'group',
-        groupId: id,
-        homeId: competitorIds[i],
-        awayId: competitorIds[j],
-      });
-    }
-  }
+  rounds.forEach(([[h1, a1], [h2, a2]], rIdx) => {
+    const round = rIdx + 1;
+    const date  = startDate ? _groupRoundDate(startDate, round, groupIndex) : null;
+    matches.push(
+      { id: `grp_${id}_r${round}_0`, stage: 'group', groupId: id, round, homeId: h1, awayId: a1, date },
+      { id: `grp_${id}_r${round}_1`, stage: 'group', groupId: id, round, homeId: h2, awayId: a2, date },
+    );
+  });
+
   return matches;
+}
+
+// Groups 0-2 → day 0, 3-5 → day 1, 6-8 → day 2, 9-11 → day 3.
+// Round offsets: R1=+0, R2=+4, R3=+13 days from tournament start.
+function _groupRoundDate(startDate, round, groupIndex) {
+  const base = [0, 4, 13][round - 1] ?? 0;
+  const d = new Date(startDate);
+  d.setDate(d.getDate() + base + Math.floor(groupIndex / 3));
+  return d.toISOString().split('T')[0];
 }
 
 // ── Round-robin schedule (circle method) ─────────────────────────────────
@@ -320,4 +337,33 @@ export function getTournamentStatus(tournament) {
 export function getDaysUntil(dateStr) {
   const diff = new Date(dateStr) - new Date();
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
+
+// ── Match-level date/score helpers ────────────────────────────────────────
+
+export function getMatchStatus(dateStr) {
+  if (!dateStr) return 'upcoming';
+  const today = new Date().toISOString().split('T')[0];
+  if (dateStr < today) return 'played';
+  if (dateStr === today) return 'live';
+  return 'upcoming';
+}
+
+export function formatMatchDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
+// Deterministic simulated FT score for played matches.
+// Same matchId always produces the same score.
+export function simulateScore(matchId, homeStrength, awayStrength) {
+  const s = Math.abs([...matchId].reduce((h, c) => ((h * 31) + c.charCodeAt(0)) | 0, 0));
+  const adj = homeStrength + 5 - awayStrength; // positive → home favoured
+  const homeBase = adj > 10 ? 2 : 1;
+  const awayBase = adj < -10 ? 2 : adj < 0 ? 1 : 0;
+  return {
+    home: Math.min(homeBase + (s % 3), 5),
+    away: Math.min(awayBase + ((s >>> 4) % 3), 4),
+  };
 }
