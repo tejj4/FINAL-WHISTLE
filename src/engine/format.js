@@ -171,10 +171,11 @@ export function getFixtures(tournament) {
 }
 
 // ── Standings calculation ─────────────────────────────────────────────────
-export function calculateStandings(competitorIds, matches, predictions, allowsDraw) {
+// realScores: optional map of matchId → { home, away } for actual goal data
+export function calculateStandings(competitorIds, matches, predictions, allowsDraw, realScores = {}) {
   const table = {};
   competitorIds.forEach(id => {
-    table[id] = { competitorId: id, mp: 0, w: 0, d: 0, l: 0, pts: 0 };
+    table[id] = { competitorId: id, mp: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 };
   });
 
   matches.forEach(match => {
@@ -184,6 +185,14 @@ export function calculateStandings(competitorIds, matches, predictions, allowsDr
     if (!table[homeId] || !table[awayId]) return;
     table[homeId].mp++;
     table[awayId].mp++;
+
+    // Add real goals when available
+    const rs = realScores[match.id];
+    if (rs) {
+      table[homeId].gf += rs.home; table[homeId].ga += rs.away;
+      table[awayId].gf += rs.away; table[awayId].ga += rs.home;
+    }
+
     if (allowsDraw && pick === 'draw') {
       table[homeId].d++; table[homeId].pts += 1;
       table[awayId].d++; table[awayId].pts += 1;
@@ -194,9 +203,13 @@ export function calculateStandings(competitorIds, matches, predictions, allowsDr
     }
   });
 
-  return Object.values(table).sort((a, b) =>
-    b.pts !== a.pts ? b.pts - a.pts : b.w - a.w
-  );
+  return Object.values(table).sort((a, b) => {
+    const gdA = a.gf - a.ga, gdB = b.gf - b.ga;
+    if (b.pts !== a.pts) return b.pts - a.pts;
+    if (gdB !== gdA)     return gdB - gdA;
+    if (b.gf  !== a.gf)  return b.gf - a.gf;
+    return b.w - a.w;
+  });
 }
 
 // ── Source resolution ─────────────────────────────────────────────────────

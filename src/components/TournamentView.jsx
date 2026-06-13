@@ -22,10 +22,10 @@ export default function TournamentView({ tournament, sport, competitors, predict
 
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
-  // Build picks from real scores in matchData so standings reflect actual results
-  const realPicks = useMemo(() => {
-    if (fmt !== 'groups' || !tournament.matchData) return {};
-    const picks = {};
+  // Build picks + real goal data from matchData so standings reflect actual results
+  const { realPicks, realScores } = useMemo(() => {
+    if (fmt !== 'groups' || !tournament.matchData) return { realPicks: {}, realScores: {} };
+    const picks = {}, scores = {};
     tournament.groups.forEach((group, gi) => {
       generateGroupFixtures(group, tournament.startDate, gi).forEach(match => {
         const fwdKey = `${match.homeId}:${match.awayId}`;
@@ -35,17 +35,18 @@ export default function TournamentView({ tournament, sport, competitors, predict
         if (!actual || !('home' in actual)) return;
         const homeGoals = flipped ? actual.away : actual.home;
         const awayGoals = flipped ? actual.home : actual.away;
+        scores[match.id] = { home: homeGoals, away: awayGoals };
         if (homeGoals > awayGoals) picks[match.id] = match.homeId;
         else if (awayGoals > homeGoals) picks[match.id] = match.awayId;
         else picks[match.id] = 'draw';
       });
     });
-    return picks;
+    return { realPicks: picks, realScores: scores };
   }, [tournament, fmt]);
 
   const groupStandings = useMemo(() => {
     if (fmt !== 'groups') return null;
-    // Real scores override user predictions in standings
+    // Real scores override user predictions; actual goals feed GD tiebreaker
     const merged = { ...predictions, ...realPicks };
     const result = {};
     tournament.groups.forEach(group => {
@@ -53,11 +54,12 @@ export default function TournamentView({ tournament, sport, competitors, predict
         group.competitorIds,
         generateGroupFixtures(group),
         merged,
-        sport.allowsDraw
+        sport.allowsDraw,
+        realScores
       );
     });
     return result;
-  }, [tournament, predictions, realPicks, sport, fmt]);
+  }, [tournament, predictions, realPicks, realScores, sport, fmt]);
 
   const resolvedKnockoutRounds = useMemo(() => {
     if (fmt !== 'groups') return null;
